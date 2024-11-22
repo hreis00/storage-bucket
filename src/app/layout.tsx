@@ -1,8 +1,8 @@
-import "./globals.css";
 import { Inter } from "next/font/google";
-import AuthProvider from "@/components/AuthProvider";
-import { headers } from "next/headers";
+import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import AuthProvider from "@/components/AuthProvider";
+import ThemeProvider from "@/components/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,14 +20,15 @@ export default function RootLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	// Force dynamic rendering
-	headers();
-
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<Toaster position="top-right" />
-				<AuthProvider>{children}</AuthProvider>
+				<AuthProvider>
+					<ThemeProvider>
+						{children}
+						<Toaster position="bottom-right" />
+					</ThemeProvider>
+				</AuthProvider>
 			</body>
 		</html>
 	);
