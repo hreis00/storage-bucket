@@ -1,37 +1,34 @@
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import bcrypt from 'bcryptjs';
-import connectDB from '@/lib/mongodb';
-import User from '@/models/User';
-import { AuthOptions } from 'next-auth';
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import connectDB from "@/lib/mongodb";
+import User from "@/models/User";
+import { AuthOptions } from "next-auth";
 
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'credentials',
+      name: "credentials",
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Missing credentials');
+          throw new Error("Missing credentials");
         }
 
         await connectDB();
 
         const user = await User.findOne({ email: credentials.email });
         if (!user) {
-          throw new Error('Invalid credentials');
+          throw new Error("Invalid credentials");
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
 
         if (!isPasswordValid) {
-          throw new Error('Invalid credentials');
+          throw new Error("Invalid credentials");
         }
 
         return {
@@ -43,11 +40,11 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   callbacks: {
     async jwt({ token, user }) {
